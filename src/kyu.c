@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 #include "glfw_utility.h"
+#include "shader.h"
 
 #define ERR_EXIT(STR)                           \
   {                                             \
@@ -47,37 +48,11 @@ float colors[] = {
   1.f, 0.f, 0.f,
 };
 
-const char* vertex = ""
-  "#version 330\n"
-  "layout(location = 0) in vec3 position;\n"
-  "layout(location = 1) in vec3 color;\n"
-  "\n"
-  "out vec3 o_color;\n"
-  "\n"
-  "void main()\n"
-  "{\n"
-  "  o_color = color;\n"
-  "  gl_Position = vec4(position, 1.f);\n"
-  "}\n";
-
-const char* fragment = ""
-  "#version 330\n"
-  "in vec3 o_color;\n"
-  "out vec4 frag_color;\n"
-  "\n"
-  "void main()\n"
-  "{\n"
-  "  frag_color = vec4(o_color, 1.f);\n"
-  "}\n";
-
 GLuint program;
 
 void init()
 {
   size_t size, offset;
-  GLuint vertex_shader, fragment_shader;
-  int success;
-  char info[512];
 
   /* VAO and VBO */
   glGenVertexArrays(1, &vao);
@@ -103,43 +78,7 @@ void init()
   glBindVertexArray(0);
 
   /* Shaders */
-  vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &vertex, NULL);
-  glCompileShader(vertex_shader);
-  glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-  if (!success)
-    {
-      glGetShaderInfoLog(vertex_shader, 512, NULL, info);
-      fprintf(stderr,
-              "[GL ERROR] - Vertex shader compilation failed\n%s\n",
-              info);
-    }
-
-  fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &fragment, NULL);
-  glCompileShader(fragment_shader);
-  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-  if (!success)
-    {
-      glGetShaderInfoLog(fragment_shader, 512, NULL, info);
-      fprintf(stderr,
-              "[GL ERROR] - Fragment shader compilation failed\n%s\n",
-              info);
-    }
-
-  program = glCreateProgram();
-  glAttachShader(program, vertex_shader);
-  glAttachShader(program, fragment_shader);
-  glLinkProgram(program);
-  glGetProgramiv(program, GL_LINK_STATUS, &success);
-  if (!success)
-    {
-      glGetProgramInfoLog(program, 512, NULL, info);
-      fprintf(stderr, "[GL ERROR] - Program linking failed\n%s\n", info);
-    }
-
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader); 
+  program = read_shaders("shaders/base.glsl");
 }
 
 void quit()
