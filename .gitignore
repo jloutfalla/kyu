@@ -1,0 +1,7 @@
+opengl
+compile_commands.json
+*.d
+*.o
+obj/*
+build/*
+.dir-locals.el
