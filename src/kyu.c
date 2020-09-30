@@ -78,7 +78,7 @@ void init()
   glBindVertexArray(0);
 
   /* Shaders */
-  program = read_shaders("shaders/base.glsl");
+  program = read_shaders("shaders/base_vertex.glsl", "shaders/base_fragment.glsl");
 }
 
 void quit()
