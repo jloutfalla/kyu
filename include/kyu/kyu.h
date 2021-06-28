@@ -1,5 +1,6 @@
-/* Utility callbacks to be use with GLFW
-   Copyright (C) 2020 Jean-Baptiste Loutfalla
+/* kyu -- kyu library
+
+   Copyright (C) 2021 Jean-Baptiste Loutfalla <jb.loutfalla@orange.fr>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -8,18 +9,18 @@
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>. */
+   along with this program. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef GLFW_UTILITY_H
-#define GLFW_UTILITY_H
+#ifndef KYU_H
+#define KYU_H
 
-#include <GLFW/glfw3.h>
+#include "kyu/utils.h"
+#include "kyu/base.h"
+#include "kyu/vector.h"
+#include "kyu/shader.h"
 
-void resize_callback(GLFWwindow*, int width, int height);
-void input_callback(GLFWwindow*, int key, int scancode, int action, int mods);
-
-#endif /* GLFW_UTILITY_H */
+#endif /* KYU_H */

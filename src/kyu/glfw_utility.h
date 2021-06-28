@@ -1,5 +1,6 @@
-/* glfw_utility -- simple callbacks to be use with GLFW
-   Copyright (C) 2020 Jean-Baptiste Loutfalla
+/* glfw_utility -- utility callbacks to be use with GLFW
+
+   Copyright (C) 2020, 2021 Jean-Baptiste Loutfalla
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,15 +15,23 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
-#include "glfw_utility.h"
+#ifndef GLFW_UTILITY_H
+#define GLFW_UTILITY_H
 
-void resize_callback(GLFWwindow* w, int width, int height)
-{
-  glViewport(0, 0, width, height);
-}
+#ifdef __cplusplus
+extern "C" {
+#endif
+  
+#include <GLFW/glfw3.h>
+  
+  void
+  resize_callback(GLFWwindow*, int width, int height);
 
-void input_callback(GLFWwindow* w, int key, int scancode, int action, int mods)
-{
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    glfwSetWindowShouldClose(w, GLFW_TRUE);
+  void
+  input_callback(GLFWwindow*, int key, int scancode, int action, int mods);
+
+#ifdef __cplusplus
 }
+#endif
+  
+#endif /* GLFW_UTILITY_H */
