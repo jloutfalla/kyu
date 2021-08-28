@@ -1,9 +1,0 @@
-#ifndef KYU_VERSION_H
-#define KYU_VERSION_H
-
-#define KYU_VERSION "@kyu_VERSION@"
-#define KYU_VERSION_MAJOR @kyu_VERSION_MAJOR@
-#define KYU_VERSION_MINOR @kyu_VERSION_MINOR@
-#define KYU_VERSION_PATCH @kyu_VERSION_PATCH@
-
-#endif /* KYU_VERSION_H */

@@ -18,9 +18,15 @@
 #ifndef KYU_H
 #define KYU_H
 
-#include "kyu/utils.h"
-#include "kyu/base.h"
-#include "kyu/vector.h"
-#include "kyu/shader.h"
+#include "kyu/core/version.h"
+#include "kyu/core/utils.h"
+#include "kyu/core/base.h"
+
+#include "kyu/graphics/gl.h"
+#include "kyu/graphics/mesh.h"
+#include "kyu/graphics/shader.h"
+
+#include "kyu/math/vector.h"
+#include "kyu/math/matrix.h"
 
 #endif /* KYU_H */

@@ -5,3 +5,5 @@ compile_commands.json
 obj/*
 build/*
 .dir-locals.el
+include/glad
+include/KHR
