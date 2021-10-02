@@ -249,7 +249,7 @@ center(kyu_point *a, kyu_point *b)
 float
 length(kyu_vec *v)
 {
-  return sqrt(length2(v));
+  return sqrtf(length2(v));
 }
 
 float
@@ -265,7 +265,7 @@ length2(kyu_vec *v)
 float
 length_2(kyu_vec2 *v)
 {
-  return sqrt(length2_2(v));
+  return sqrtf(length2_2(v));
 }
 
 float

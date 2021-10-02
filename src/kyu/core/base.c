@@ -35,6 +35,7 @@ struct kyu_app {
   
   void (*init)();
   void (*quit)();
+  void (*update)();
   void (*render)();
 };
 
@@ -48,9 +49,11 @@ static void APIENTRY kyu_log_error_callback(GLenum source, GLenum type, GLuint i
 static unsigned char suppress_glad_callback = 0;
 #endif /* !NDEBUG */
 
+double kyu_deltatime = 0.0;
+
 kyu_app *
 kyu_init(int width, int height, const char *name,
-         void (*init)(), void (*quit)(), void (*render)())
+         void (*init)(), void (*quit)(), void (*update)(), void (*render)())
 {
   GLFWwindow* window = NULL;
   kyu_app *app = malloc(sizeof(kyu_app));
@@ -110,6 +113,7 @@ kyu_init(int width, int height, const char *name,
   app->window = window;
   app->init = init;
   app->quit = quit;
+  app->update = update;
   app->render = render;
   
   return app;
@@ -118,19 +122,56 @@ kyu_init(int width, int height, const char *name,
 int
 kyu_run(kyu_app *app)
 {
+  static double limit = 1.0 / KYU_FRAMERATE;
+  int updates, frames;
+  double last_time, now_time, delta_time, timer;
+  
+  KYU_ASSERT(app != NULL, "Pointer to kyu_app is NULL");
+  if (app == NULL)
+    {
+      glfwTerminate();
+      exit(EXIT_FAILURE);
+    }
+  
   app->init();
+
+  kyu_deltatime = delta_time = 0.0;
+  timer = last_time = glfwGetTime();
+  updates = frames = 0;
   
   while (!glfwWindowShouldClose(app->window))
     {
+      now_time = glfwGetTime();
+      kyu_deltatime = (now_time - last_time);
+      delta_time += kyu_deltatime / limit;
+      last_time = now_time;
+      
+      while (delta_time >= 1.0)
+        {
+          app->update();
+          updates++;
+          delta_time--;
+        }
+      
       app->render();
-
+      
       /* Swap front and back buffers */
       glfwSwapBuffers(app->window);
-
+      frames++;
+      
       /* Poll for and process events */
       glfwPollEvents();
+      
+      if (glfwGetTime() - timer > 1.0)
+        {
+          timer++;
+          printf("\rUpdates : %d | Frames : %d", updates, frames);
+          fflush(stdout);
+          updates = frames = 0;
+        }
     }
-
+  printf("\n");
+  
   app->quit();
   glfwTerminate();
 

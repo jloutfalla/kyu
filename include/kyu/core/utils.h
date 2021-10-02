@@ -49,12 +49,19 @@ extern "C" {
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
 
 #define RAD(X) ((X) * M_PI / 180.0)
+#define RADF(X) (float)RAD(X)
 
 /* ANSI escape sequences */
 
 #define ESC     "\033"
 #define RESET   ESC"[0m"
+
+#ifdef __KYU_WIN__
+#define BOLD
+#else
 #define BOLD    ESC"[1m"
+#endif /* __KYU_WIN__ */
+
 #define RED     ESC"[31m"
 #define GREEN   ESC"[32m"
 #define YELLOW  ESC"[33m"

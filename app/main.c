@@ -18,6 +18,7 @@ static float colors[] = {
   0.f, 1.f, 0.f,
 };
 
+static kyu_matrix *matrix = NULL;
 static GLuint program;
 static kyu_mesh *mesh = NULL;
 
@@ -43,6 +44,8 @@ init()
   kyu_matrix_mult_vec(mat, mat, &v);
   kyu_matrix_print(mat);
   kyu_matrix_release(mat);
+
+  matrix = kyu_matrix_identity4x4();
 
   before = clock();
   mesh = kyu_mesh_read(mesh_file);
@@ -98,6 +101,8 @@ init()
 static void
 quit()
 {
+  kyu_matrix_release(matrix);
+  
   glDeleteProgram(program);
   glDeleteBuffers(1, &vbo);
   glDeleteBuffers(1, &ebo);
@@ -110,34 +115,40 @@ static float angleY = 10.f;
 static float angleZ = 0.f;
 
 static void
+update()
+{
+  kyu_matrix *m = kyu_matrix_rotateY(angleY);
+  
+  angleY += 1.f;
+  angleZ += 0.5f;
+
+  kyu_matrix_release(matrix);
+  matrix = kyu_matrix_rotateZ(angleZ);
+  
+  kyu_matrix_mult(matrix, m, matrix);
+
+  kyu_matrix_release(m);
+}
+
+static void
 render()
 {
   /* Render here */
   glClear(GL_COLOR_BUFFER_BIT);
 
-  angleY += 1.f;
-  angleZ += 0.5f;
-  kyu_vec v = kyu_vec_init(0.5f, 0.f, 0.f);
-  kyu_matrix *m = kyu_matrix_rotateZ(angleZ);
-  kyu_matrix *m1 = kyu_matrix_rotateY(angleY);
-  kyu_matrix_mult(m, m1, m);
-
   glUseProgram(program);
 
   GLint l = glGetUniformLocation(program, "mat");
-  glUniformMatrix4fv(l, 1, GL_TRUE, m->t);
+  glUniformMatrix4fv(l, 1, GL_TRUE, matrix->t);
   
   glBindVertexArray(vao);
   glDrawElements(GL_TRIANGLES, mesh->nb_triangles * 3, GL_UNSIGNED_INT, 0);
-
-  kyu_matrix_release(m1);
-  kyu_matrix_release(m);
 }
 
 int
 main()
 {  
-  kyu_app *app = kyu_init(WIDTH, HEIGHT, "Kyu v" KYU_VERSION, init, quit, render);
+  kyu_app *app = kyu_init(WIDTH, HEIGHT, "Kyu v" KYU_VERSION, init, quit, update, render);
   if (app == NULL)
     {
       fprintf(stderr, "Error while creating the app\n");

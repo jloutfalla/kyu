@@ -432,14 +432,14 @@ kyu_matrix_rotateX(float angle)
 {
   kyu_vec a, b;
   kyu_matrix *ret = NULL;
-  float rad = RAD(angle);
+  float rad = RADF(angle);
   
   ret = kyu_matrix_identity4x4();
   if (ret == NULL)
     return ret;
 
-  a = kyu_vec_init(0.f, cos(rad), sin(rad));
-  b = kyu_vec_init(0.f, -sin(rad), cos(rad));
+  a = kyu_vec_init(0.f,  cosf(rad), sinf(rad));
+  b = kyu_vec_init(0.f, -sinf(rad), cosf(rad));
 
   kyu_matrix_setJ(ret, &a);
   kyu_matrix_setK(ret, &b);
@@ -452,14 +452,14 @@ kyu_matrix_rotateY(float angle)
 {
   kyu_vec a, b;
   kyu_matrix *ret = NULL;
-  float rad = RAD(angle);
+  float rad = RADF(angle);
   
   ret = kyu_matrix_identity4x4();
   if (ret == NULL)
     return ret;
   
-  a = kyu_vec_init(cos(rad), 0.f, -sin(rad));
-  b = kyu_vec_init(sin(rad), 0.f, cos(rad));
+  a = kyu_vec_init(cosf(rad), 0.f, -sinf(rad));
+  b = kyu_vec_init(sinf(rad), 0.f,  cosf(rad));
 
   kyu_matrix_setI(ret, &a);
   kyu_matrix_setK(ret, &b);
@@ -472,14 +472,14 @@ kyu_matrix_rotateZ(float angle)
 {
   kyu_vec a, b;
   kyu_matrix *ret = NULL;
-  float rad = RAD(angle);
+  float rad = RADF(angle);
   
   ret = kyu_matrix_identity4x4();
   if (ret == NULL)
     return ret;
 
-  a = kyu_vec_init(cos(rad), sin(rad), 0.f);
-  b = kyu_vec_init(-sin(rad), cos(rad), 0.f);
+  a = kyu_vec_init( cosf(rad), sinf(rad), 0.f);
+  b = kyu_vec_init(-sinf(rad), cosf(rad), 0.f);
 
   kyu_matrix_setI(ret, &a);
   kyu_matrix_setJ(ret, &b);

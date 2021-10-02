@@ -100,6 +100,10 @@ elseif(UNIX)
     "__KYU_UNIX__")
 endif()
   
+find_library(MATH_LIB m)
+if(MATH_LIB)
+  target_link_libraries("${PROJECT_NAME}" PUBLIC "${MATH_LIBRARY}")
+endif()
 
 target_include_directories("${PROJECT_NAME}"
   PUBLIC
@@ -115,8 +119,7 @@ target_link_libraries("${PROJECT_NAME}"
   glfw
 
   PUBLIC
-  OpenGL::GL
-  m)
+  OpenGL::GL)
 #--------------------------------------------------------------------#
 
 add_subdirectory(app)

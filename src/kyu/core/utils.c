@@ -44,11 +44,11 @@ kyu_log(kyu_log_type type, const char *restrict file, int line,
       break;
       
     case WARNING:
-      type_message = YELLOW"[WARNING]";
+      type_message = BOLD YELLOW "[WARNING]" RESET YELLOW;
       break;
 
     case ERROR:
-      type_message = RED"[ERROR]";
+      type_message = BOLD RED "[ERROR]" RESET RED;
       break;
 
     case GL_LOG:
@@ -56,11 +56,11 @@ kyu_log(kyu_log_type type, const char *restrict file, int line,
       break;
 
     case GL_WARNING:
-      type_message = YELLOW"[GL WARNING]";
+      type_message = BOLD YELLOW "[GL WARNING]" RESET YELLOW;
       break;
       
     case GL_ERROR:
-      type_message = RED"[GL ERROR]";
+      type_message = BOLD RED "[GL ERROR]" RESET RED;
       break;
 
     default:
@@ -69,7 +69,7 @@ kyu_log(kyu_log_type type, const char *restrict file, int line,
     }
 
   if (file == NULL)
-    fprintf(stderr, "%s - %s\n"RESET, type_message, log_message);
+    fprintf(stderr, "%s - %s\n" RESET, type_message, log_message);
   else
-    fprintf(stderr, "%s:%d: %s - %s\n"RESET, file, line, type_message, log_message);
+    fprintf(stderr, "%s:%d: %s - %s\n" RESET, file, line, type_message, log_message);
 }
