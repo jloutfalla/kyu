@@ -73,39 +73,39 @@ add_custom_command(OUTPUT "${PROJECT_SOURCE_DIR}/include/glad/glad.h"
   COMMENT "Getting GLAD header files"
   VERBATIM)
 
-add_library("${PROJECT_NAME}" "${KYU_LIB_TYPE}" "${LIB_FILES}" "${LIB_HEADERS}")
+add_library(kyu "${KYU_LIB_TYPE}" "${LIB_FILES}" "${LIB_HEADERS}")
 
-set_target_properties("${PROJECT_NAME}"
+set_target_properties(kyu
   PROPERTIES
   C_EXTENSION OFF
   C_STANDARD 99)
 
 if(MSVC)
-  set_property(TARGET "${PROJECT_NAME}" PROPERTY C_STANDARD 11)
-  target_compile_options("${PROJECT_NAME}" PRIVATE /W4 /WX /wd4127 /wd5105)
+  set_property(TARGET kyu PROPERTY C_STANDARD 11)
+  target_compile_options(kyu PRIVATE /W4 /WX /wd4127 /wd5105)
 else()
-  target_compile_options("${PROJECT_NAME}" PRIVATE -W -Wall -Wextra -pedantic -Werror)
+  target_compile_options(kyu PRIVATE -W -Wall -Wextra -pedantic -Werror)
 endif()
 
 if(MSVC)
-  target_compile_definitions("${PROJECT_NAME}"
+  target_compile_definitions(kyu
     PRIVATE
     "_CRT_SECURE_NO_WARNINGS" # don't raise a warning while using fopen
     
     PUBLIC
     "__KYU_WIN__")
 elseif(UNIX)
-  target_compile_definitions("${PROJECT_NAME}"
+  target_compile_definitions(kyu
     PUBLIC
     "__KYU_UNIX__")
 endif()
   
 find_library(MATH_LIB m)
 if(MATH_LIB)
-  target_link_libraries("${PROJECT_NAME}" PUBLIC "${MATH_LIBRARY}")
+  target_link_libraries(kyu PUBLIC "${MATH_LIBRARY}")
 endif()
 
-target_include_directories("${PROJECT_NAME}"
+target_include_directories(kyu
   PUBLIC
   "${PROJECT_SOURCE_DIR}/include"
   "${PROJECT_BINARY_DIR}/include"
@@ -113,7 +113,7 @@ target_include_directories("${PROJECT_NAME}"
   PRIVATE
   "${PROJECT_SOURCE_DIR}/src/kyu")
 
-target_link_libraries("${PROJECT_NAME}"
+target_link_libraries(kyu
   PRIVATE
   glad
   glfw
