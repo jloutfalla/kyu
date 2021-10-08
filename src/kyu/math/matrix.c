@@ -491,7 +491,6 @@ void
 kyu_matrix_print(kyu_matrix *matrix)
 {
   int i, j, index;
-  char n;
 
   KYU_ASSERT(matrix != NULL, "No matrix provided");
   if (matrix == NULL)
@@ -506,8 +505,10 @@ kyu_matrix_print(kyu_matrix *matrix)
           printf(" %.2f", matrix->t[index]);
         }
 
-      n = (i != matrix->height - 1) ? '\n' : '\0';
-      printf("%c ", n);
+      if (i != matrix->height - 1)
+        printf("\n");
+      else
+        printf(" ");
     }
   printf("]\n");
 }

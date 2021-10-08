@@ -69,7 +69,7 @@ kyu_log(kyu_log_type type, const char *restrict file, int line,
     }
 
   if (file == NULL)
-    fprintf(stderr, "%s - %s\n" RESET, type_message, log_message);
+    fprintf(stderr, "%s - %s" RESET "\n", type_message, log_message);
   else
-    fprintf(stderr, "%s:%d: %s - %s\n" RESET, file, line, type_message, log_message);
+    fprintf(stderr, "%s:%d: %s - %s" RESET "\n", file, line, type_message, log_message);
 }
