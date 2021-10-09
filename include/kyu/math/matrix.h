@@ -22,6 +22,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include <stdio.h>
+
 #include "kyu/math/vector.h"
   
 typedef struct {
@@ -65,6 +67,7 @@ kyu_matrix *kyu_matrix_rotateX(float angle);
 kyu_matrix *kyu_matrix_rotateY(float angle);
 kyu_matrix *kyu_matrix_rotateZ(float angle);
 
+void kyu_matrix_fprint(FILE *stream, kyu_matrix *matrix);
 void kyu_matrix_print(kyu_matrix *matrix);
 
 #ifdef __cplusplus

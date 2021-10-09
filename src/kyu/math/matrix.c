@@ -490,25 +490,31 @@ kyu_matrix_rotateZ(float angle)
 void
 kyu_matrix_print(kyu_matrix *matrix)
 {
+  kyu_matrix_fprint(stdout, matrix);
+}
+
+void
+kyu_matrix_fprint(FILE *stream, kyu_matrix *matrix)
+{
   int i, j, index;
 
   KYU_ASSERT(matrix != NULL, "No matrix provided");
   if (matrix == NULL)
     return;
 
-  printf("[");
+  fprintf(stream, "[");
   for(i = 0; i < matrix->height; ++i)
     {
       for (j = 0; j < matrix->width; ++j)
         {
           index = i * matrix->width + j;
-          printf(" %.2f", matrix->t[index]);
+          fprintf(stream, " %.2f", matrix->t[index]);
         }
 
       if (i != matrix->height - 1)
-        printf("\n");
+        fprintf(stream, "\n ");
       else
-        printf(" ");
+        fprintf(stream, " ");
     }
-  printf("]\n");
+  fprintf(stream, "]\n");
 }
