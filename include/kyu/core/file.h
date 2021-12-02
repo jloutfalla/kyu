@@ -22,22 +22,15 @@
 extern "C" {
 #endif /* __cpluscplus */
 
-#include <stdio.h>
+#include "fmmap/fmmap.h"
 
-typedef struct os_spec kyu_os_spec;
+  typedef fmmap_file kyu_file;
   
-typedef struct {
-  FILE *stream;
-  char *name;
-  size_t size;
-  kyu_os_spec *os_spec;
-} kyu_file;
-  
-kyu_file *kyu_file_open(const char *restrict filename,
-                        const char *restrict mode);
-int kyu_file_close(kyu_file *file);
-int kyu_file_map_memory(char **buff, const kyu_file *file);
-int kyu_file_unmap_memory(char **buff, const kyu_file *file);
+  kyu_file *kyu_open_file(const char *restrict filename,
+                          const char *restrict mode);
+  int kyu_close_file(kyu_file *file);
+  int kyu_mmap_file(char **buff, const kyu_file *file);
+  int kyu_unmap_file(char **buff, const kyu_file *file);
 
   
 #ifdef __cplusplus

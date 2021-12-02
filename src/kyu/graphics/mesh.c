@@ -82,7 +82,7 @@ kyu_mesh_read(const char *restrict filename)
 
   KYU_ASSERT(filename != NULL, "No filename provided");
   
-  if ((file = kyu_file_open(filename, "r")) == NULL)
+  if ((file = kyu_open_file(filename, "r")) == NULL)
     return NULL;
 
   mesh = (kyu_mesh *)malloc(sizeof(kyu_mesh));
@@ -159,7 +159,7 @@ kyu_mesh_read(const char *restrict filename)
   /* SHRINK_ARRAY(mesh->colors,    mesh->nb_colors); */
   SHRINK_ARRAY(mesh->triangles, mesh->nb_triangles);
   
-  kyu_file_close(file);
+  kyu_close_file(file);
   return mesh;
 }
 

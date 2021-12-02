@@ -77,13 +77,13 @@ create_shader(const char *filename, const GLuint type)
   if (filename == NULL)
     return -1;
   
-  if ((file = kyu_file_open(filename, "r")) == NULL)
+  if ((file = kyu_open_file(filename, "r")) == NULL)
     {
       KYU_LOG_ERROR("Failed to open the file \"%s\", exiting", filename);
       return -1;
     }
 
-  kyu_file_map_memory(&buffer, file);
+  kyu_mmap_file(&buffer, file);
   
   switch (type)
     {
@@ -111,8 +111,8 @@ create_shader(const char *filename, const GLuint type)
               current_type, info);
     }
 
-  kyu_file_unmap_memory(&buffer, file);
-  kyu_file_close(file);
+  kyu_unmap_file(&buffer, file);
+  kyu_close_file(file);
   
   return shader;
 }
