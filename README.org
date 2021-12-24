@@ -1,0 +1,40 @@
+#+TITLE: Kyu
+#+AUTHOR: Jean-Baptiste Loutfalla
+#+LANGUAGE: en
+#+OPTIONS: toc:nil; num:nil
+
+A simple 3D rendering lib compatible with OpenGL and ps2sdk written in C
+
+** About
+This repo uses =git-submodules= to have [[https://www.glfw.org/][GLFW]] and [[https://github.com/Dav1dde/glad][glad]].
+
+Please use the following command to clone this repo:
+#+BEGIN_SRC shell
+  git clone --recurse-submodules https://github.com/jloutfalla/kyu
+#+END_SRC
+or
+#+BEGIN_SRC shell
+  git clone https://github.com/jloutfalla/kyu
+  cd kyu
+  git submodule update --init --recursive
+#+END_SRC
+
+** Requirements
+If you want to use this lib to develop on the Sony Playstation 2,
+please install the toolchain and the SDK from [[https://github.com/ps2dev/ps2dev][ps2dev]].
+
+** Build
+To build for Windows of Linux, do:
+#+BEGIN_SRC shell
+  mkdir build
+  cmake -B build/ [{-D <variable>=<value>}...]
+  cmake --build build
+#+END_SRC
+
+To build for the PS2, simply do (ensure that the =$PS2SDK= variable
+points to the installation directory of =ps2sdk=):
+#+BEGIN_SRC shell
+  mkdir build
+  cmake --toolchain "$PS2SDK/ps2dev.cmake" -B build/
+  cmake --build build
+#+END_SRC
