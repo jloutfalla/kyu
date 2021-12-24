@@ -10,7 +10,7 @@ if("${CMAKE_SYSTEM_NAME}" MATCHES "Generic")
   endif()
 else()
   set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
-  set(GLAD_GENERATOR "c$<$<CONFIG:Debug>:-debug>" CACHE STRING "aze" FORCE)
+  set(GLAD_GENERATOR "c$<$<OR:$<CONFIG:Debug>,$<CONFIG:>>:-debug>" CACHE STRING "aze" FORCE)
 
   set(OpenGL_GL_PREFERENCE GLVND)
   
