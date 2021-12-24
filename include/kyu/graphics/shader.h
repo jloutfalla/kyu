@@ -22,11 +22,15 @@
 extern "C" {
 #endif
   
-#include "kyu/graphics/gl.h"
+#include "kyu/core/utils.h"
   
-GLuint read_shaders(const char *restrict vertex_file,
-                    const char *restrict fragment_file);
-int create_shader(const char *filename, const GLuint type);
+#ifndef __KYU_PS2__
+#include "kyu/graphics/gl.h"
+#endif
+  
+  GLuint read_shaders(const char *restrict vertex_file,
+                      const char *restrict fragment_file);
+  int create_shader(const char *filename, const GLuint type);
 
 #ifdef __cplusplus
 }

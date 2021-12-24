@@ -186,7 +186,7 @@ need_skip_line(int *index, const char *restrict line)
   *index = 0;
   skip_idx = 0;
       
-  while (line[*index] && isspace(line[*index]))
+  while (line[*index] && isspace((int)line[*index]))
     *index += 1;
 
   if (line[*index] == '\0')

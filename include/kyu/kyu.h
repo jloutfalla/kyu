@@ -22,9 +22,11 @@
 #include "kyu/core/utils.h"
 #include "kyu/core/base.h"
 
+#ifndef __KYU_PS2__
 #include "kyu/graphics/gl.h"
-#include "kyu/graphics/mesh.h"
 #include "kyu/graphics/shader.h"
+#endif
+#include "kyu/graphics/mesh.h"
 
 #include "kyu/math/vector.h"
 #include "kyu/math/matrix.h"

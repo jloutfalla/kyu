@@ -5,17 +5,31 @@
 extern "C" {
 #endif
 
+#include "kyu/core/utils.h"
+#ifndef __KYU_PS2__
 #include "kyu/graphics/gl.h"
-
 #define KYU_FRAMERATE 60.0
+#else
+  #include <tamtypes.h>
+  
+#define KYU_BUFFER_SIZE 100
+  extern qword_t *g_buff;
+  
+  extern float g_screen_cx;
+  extern float g_screen_cy;
+  extern float g_screen_x;
+  extern float g_screen_y;
 
-typedef struct kyu_app kyu_app;
+#define KYU_FRAMERATE 50.0
+#endif
 
-extern double kyu_deltatime;
+  typedef struct kyu_app kyu_app;
 
-kyu_app *kyu_init(int width, int height, const char *name,
-                  void (*init)(), void (*quit)(), void (*update)(), void (*render)());
-int kyu_run(kyu_app *app);
+  extern double kyu_deltatime;
+
+  kyu_app *kyu_init(int width, int height, const char *name,
+                    void (*init)(), void (*quit)(), void (*update)(), void *(*render)(void *v));
+  int kyu_run(kyu_app *app);
   
 #ifdef __cplusplus
 }

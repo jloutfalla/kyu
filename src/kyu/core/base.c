@@ -15,14 +15,28 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 #include "kyu/core/base.h"
-#include <GLFW/glfw3.h>
+
+#ifndef __KYU_PS2__
+#  include <GLFW/glfw3.h>
+#  include "utils/glfw_utility.h"
+#else
+#  include <graph.h>
+#  include <dma.h>
+#  include <gs_psm.h>
+#  include <gif_tags.h>
+#  include <draw.h>
+
+qword_t *g_buff = NULL;
+
+float g_screen_cx = 0.f;
+float g_screen_cy = 0.f;
+float g_screen_x  = 0.f;
+float g_screen_y  = 0.f;
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "kyu/core/utils.h"
-
-#include "utils/glfw_utility.h"
+#include <string.h>
 
 #define ERR_EXIT(STR)              \
   {                                \
@@ -31,14 +45,20 @@
   }
 
 struct kyu_app {
+#ifndef __KYU_PS2__
   GLFWwindow *window;
+#else
+  framebuffer_t fb;
+  zbuffer_t z;
+#endif
   
   void (*init)();
   void (*quit)();
   void (*update)();
-  void (*render)();
+  void *(*render)(void *);
 };
 
+#ifndef __KYU_PS2__
 #ifndef NDEBUG
 static void kyu_glad_pre_callback(const char *name, void *funcptr, int len_args, ...);
 static void kyu_glad_post_callback(const char *name, void *funcptr, int len_args, ...);
@@ -48,14 +68,15 @@ static void APIENTRY kyu_log_error_callback(GLenum source, GLenum type, GLuint i
 
 static unsigned char suppress_glad_callback = 0;
 #endif /* !NDEBUG */
+#endif /* !__KYU_PS2__ */
 
 double kyu_deltatime = 0.0;
 
 kyu_app *
 kyu_init(int width, int height, const char *name,
-         void (*init)(), void (*quit)(), void (*update)(), void (*render)())
+         void (*init)(), void (*quit)(), void (*update)(), void *(*render)(void *))
 {
-  GLFWwindow* window = NULL;
+  (void)name;
   kyu_app *app = malloc(sizeof(kyu_app));
 
   if (app == NULL)
@@ -63,6 +84,9 @@ kyu_init(int width, int height, const char *name,
       KYU_LOG_ERROR("Can't allocate a kyu_app struct");
       return NULL;
     }
+  
+#ifndef __KYU_PS2__
+  GLFWwindow* window = NULL;
 
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -111,8 +135,50 @@ kyu_init(int width, int height, const char *name,
 #endif /* !NDEBUG */
 
   app->window = window;
-  app->init = init;
-  app->quit = quit;
+#else /* __KYU_PS2__ */
+  qword_t *q = NULL;
+  framebuffer_t fb = { 0 };
+  zbuffer_t z = { 0 };
+
+  dma_channel_initialize(DMA_CHANNEL_GIF, NULL, 0);
+  dma_channel_fast_waits(DMA_CHANNEL_GIF);
+  
+  g_screen_cx = (float)width  / 2.f;
+  g_screen_cy = (float)height / 2.f;
+  g_screen_x  = 2048.f - g_screen_cx;
+  g_screen_y  = 2048.f - g_screen_cy;
+  
+  fb.address = graph_vram_allocate(width, height, GS_PSM_32, GRAPH_ALIGN_PAGE);
+  fb.width   = width;
+  fb.height  = height;
+  fb.psm     = GS_PSM_32;
+  fb.mask    = 0;
+
+  z.enable = DRAW_ENABLE;
+
+  graph_set_mode(GRAPH_MODE_NONINTERLACED, GRAPH_MODE_PAL, GRAPH_MODE_FIELD, GRAPH_DISABLE);
+  graph_set_screen(0, 0, width, height);
+  graph_set_bgcolor(0, 0, 0);
+  graph_set_framebuffer_filtered(fb.address, width, fb.psm, 0, 0);
+  graph_enable_output();
+
+  if (g_buff == NULL)
+    g_buff = malloc(sizeof(qword_t) * KYU_BUFFER_SIZE);
+  
+  memset(g_buff, 0, KYU_BUFFER_SIZE);
+  q = g_buff;
+  q = draw_setup_environment(q, 0, &fb, &z);
+  q = draw_primitive_xyoffset(q, 0, g_screen_x, g_screen_y);
+  q = draw_finish(q);
+  dma_channel_send_normal(DMA_CHANNEL_GIF, g_buff, q - g_buff, 0, 0);
+  dma_wait_fast();
+  
+  app->fb = fb;
+  app->z  = z;
+#endif /* __KYU_PS2__ */
+  
+  app->init   = init;
+  app->quit   = quit;
   app->update = update;
   app->render = render;
   
@@ -122,39 +188,62 @@ kyu_init(int width, int height, const char *name,
 int
 kyu_run(kyu_app *app)
 {
-  static double limit = 1.0 / KYU_FRAMERATE;
-  int updates, frames;
-  double last_time, now_time, delta_time, timer;
+  void *v = NULL;
   
   KYU_ASSERT(app != NULL, "Pointer to kyu_app is NULL");
   if (app == NULL)
     {
+#ifndef __KYU_PS2__
       glfwTerminate();
+#endif
       exit(EXIT_FAILURE);
     }
-  
-  app->init();
+
+  if (app->init != NULL)
+    app->init();
+
+#ifndef __KYU_PS2__
+  static double limit = 1.0 / KYU_FRAMERATE;
+  int updates, frames;
+  double last_time, now_time, delta_time, timer;
 
   kyu_deltatime = delta_time = 0.0;
   timer = last_time = glfwGetTime();
   updates = frames = 0;
-  
+
   while (!glfwWindowShouldClose(app->window))
     {
       now_time = glfwGetTime();
       kyu_deltatime = (now_time - last_time);
       delta_time += kyu_deltatime / limit;
       last_time = now_time;
-      
-      while (delta_time >= 1.0)
+
+      while (app->update != NULL && delta_time >= 1.0)
         {
           app->update();
           updates++;
           delta_time--;
         }
+#else /* __KYU_PS2__ */
+  qword_t *q = NULL;
+  while (1)
+    {
+      dma_wait_fast();
+      memset(g_buff, 0, KYU_BUFFER_SIZE);
+      q = g_buff;
+      q = draw_clear(q, 0, g_screen_x, g_screen_y,
+                     app->fb.width, app->fb.height,
+                     20, 20, 20);
+
+      if (app->update != NULL)
+        app->update();
+
+      v = q;
+#endif
       
-      app->render();
-      
+      v = app->render(v);
+
+#ifndef __KYU_PS2__
       /* Swap front and back buffers */
       glfwSwapBuffers(app->window);
       frames++;
@@ -169,11 +258,22 @@ kyu_run(kyu_app *app)
           fflush(stdout);
           updates = frames = 0;
         }
+#else /* __KYU_PS2__ */
+      q = (qword_t *)v;
+      q = draw_finish(q);
+      dma_channel_send_normal(DMA_CHANNEL_GIF, g_buff, q - g_buff, 0, 0);
+      draw_wait_finish();
+      graph_wait_vsync();
+#endif
     }
   printf("\n");
-  
-  app->quit();
+
+  if (app->quit != NULL)
+    app->quit();
+
+#ifndef __KYU_PS2__
   glfwTerminate();
+#endif
 
   free(app);
   app = NULL;
@@ -181,6 +281,7 @@ kyu_run(kyu_app *app)
   return EXIT_SUCCESS;
 }
 
+#ifndef __KYU_PS2__
 #ifndef NDEBUG
 static void
 kyu_glad_pre_callback(const char *name, void *funcptr, int len_args, ...)
@@ -288,3 +389,4 @@ APIENTRY kyu_log_error_callback(GLenum source, GLenum type, GLuint id, GLenum se
     kyu_log(log_type, NULL, -1, "[%s] - %s", severity_s, message);
 }
 #endif /* !NDEBUG */
+#endif /* !__KYU_PS2__ */

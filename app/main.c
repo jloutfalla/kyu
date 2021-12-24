@@ -130,8 +130,8 @@ update()
   kyu_matrix_release(m);
 }
 
-static void
-render()
+static void*
+render(void *v)
 {
   /* Render here */
   glClear(GL_COLOR_BUFFER_BIT);
@@ -143,11 +143,13 @@ render()
   
   glBindVertexArray(vao);
   glDrawElements(GL_TRIANGLES, mesh->nb_triangles * 3, GL_UNSIGNED_INT, 0);
+
+  return v;
 }
 
 int
 main()
-{  
+{
   kyu_app *app = kyu_init(WIDTH, HEIGHT, "Kyu v" KYU_VERSION, init, quit, update, render);
   if (app == NULL)
     {
